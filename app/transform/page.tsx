@@ -388,11 +388,9 @@ export default function TransformPage() {
       selected["Output Format"]
     );
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    if (!apiBaseUrl) {
-      throw new Error("The API URL is not configured.");
-    }
+    const apiBaseUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://transforma-ai-api.onrender.com";
 
     const response = await fetch(
       `${apiBaseUrl.replace(/\/$/, "")}/transform`,
@@ -403,7 +401,10 @@ export default function TransformPage() {
     );
 
     if (!response.ok) {
-      throw new Error("Transformation failed.");
+      const errorBody = await response.text();
+      throw new Error(
+        errorBody || `Transformation failed (${response.status}).`
+      );
     }
 
     const blob = await response.blob();
@@ -425,7 +426,11 @@ export default function TransformPage() {
     setHasGenerated(true);
   } catch (error) {
     console.error("Transformation error:", error);
-    alert("Transformation failed. Please try again.");
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Transformation failed. Please try again."
+    );
   } finally {
     setIsTransforming(false);
   }
