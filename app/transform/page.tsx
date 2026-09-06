@@ -123,6 +123,12 @@ const fieldOptions = {
     "Newsletter",
     "Article",
   ],
+
+  "Output Format": [
+    "PDF",
+    "DOCX",
+    "PNG",
+  ],
 };
 
 const initialParameters = {
@@ -133,6 +139,7 @@ const initialParameters = {
   "Level of Detail": "Concise",
   "Content Style": "Informative",
   "Output Type": "Executive Summary",
+  "Output Format": "PDF",
 };
 
 type ParameterName = keyof typeof fieldOptions;
@@ -149,30 +156,30 @@ export default function TransformPage() {
    */
   const [darkMode, setDarkMode] = useState(false);
 
-useEffect(() => {
-  const savedTheme = localStorage.getItem("transforma-theme");
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("transforma-theme");
 
-  const isDark = savedTheme === "dark";
+    const isDark = savedTheme === "dark";
 
-  setDarkMode(isDark);
+    setDarkMode(isDark);
 
-  document.documentElement.classList.toggle("dark", isDark);
-}, []);
+    document.documentElement.classList.toggle("dark", isDark);
+  }, []);
 
-const toggleTheme = () => {
-  setDarkMode((current) => {
-    const next = !current;
+  const toggleTheme = () => {
+    setDarkMode((current) => {
+      const next = !current;
 
-    localStorage.setItem(
-      "transforma-theme",
-      next ? "dark" : "light"
-    );
+      localStorage.setItem(
+        "transforma-theme",
+        next ? "dark" : "light"
+      );
 
-    document.documentElement.classList.toggle("dark", next);
+      document.documentElement.classList.toggle("dark", next);
 
-    return next;
-  });
-};
+      return next;
+    });
+  };
 
 
   /*
@@ -180,28 +187,29 @@ const toggleTheme = () => {
    */
   const [selected, setSelected] =
     useState<Record<ParameterName, string>>(initialParameters);
-    useEffect(() => {
-  const savedSettings = sessionStorage.getItem(
-    "transforma-settings"
-  );
+  useEffect(() => {
+    const savedSettings = sessionStorage.getItem(
+      "transforma-settings"
+    );
 
-  if (savedSettings) {
-    try {
-      const parsedSettings = JSON.parse(savedSettings);
+    if (savedSettings) {
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
 
-      setSelected({
-        ...initialParameters,
-        ...parsedSettings,
-      });
-    } catch {
-      sessionStorage.removeItem("transforma-settings");
+        setSelected({
+          ...initialParameters,
+          ...parsedSettings,
+        });
+      } catch {
+        sessionStorage.removeItem("transforma-settings");
+      }
     }
-  }
-}, []);
+  }, []);
 
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [sourceText, setSourceText] = useState("");
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
   const [dragActive, setDragActive] = useState(false);
   const [isTransforming, setIsTransforming] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -209,25 +217,25 @@ const toggleTheme = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateParameter = (
-  name: ParameterName,
-  value: string
-) => {
-  setSelected((current) => {
-    const updated = {
-      ...current,
-      [name]: value,
-    };
+    name: ParameterName,
+    value: string
+  ) => {
+    setSelected((current) => {
+      const updated = {
+        ...current,
+        [name]: value,
+      };
 
-    sessionStorage.setItem(
-      "transforma-settings",
-      JSON.stringify(updated)
-    );
+      sessionStorage.setItem(
+        "transforma-settings",
+        JSON.stringify(updated)
+      );
 
-    return updated;
-  });
+      return updated;
+    });
 
-  setHasGenerated(false);
-};
+    setHasGenerated(false);
+  };
 
 
   /*
@@ -242,6 +250,10 @@ const toggleTheme = () => {
       ".md",
       ".csv",
       ".rtf",
+      ".png",
+      ".jpeg",
+      ".webp",
+      ".jpg",
     ];
 
     const incomingFiles = Array.from(files).filter((file) => {
@@ -291,6 +303,7 @@ const toggleTheme = () => {
       current.filter((item) => item.id !== id)
     );
 
+    setSourceText("");
     setHasGenerated(false);
   };
 
@@ -312,50 +325,142 @@ const toggleTheme = () => {
    * This is still a frontend simulation.
    * Later you can replace this with your API call.
    */
-  const handleTransform = () => {
-    if (!uploadedFiles.length && !sourceText.trim()) {
-      return;
+
+ const handleTransform = async () => {
+  if (!uploadedFiles.length && !sourceText.trim()) {
+    return;
+  }
+
+  setIsTransforming(true);
+  setHasGenerated(false);
+
+  try {
+    const formData = new FormData();
+
+    formData.append("source_text", sourceText);
+
+    uploadedFiles.forEach((item) => {
+      formData.append("files", item.file);
+    });
+
+    formData.append(
+      "additional_instructions",
+      additionalInstructions
+    );
+
+    formData.append(
+      "audience",
+      selected["Target Audience"]
+    );
+
+    formData.append(
+      "objective",
+      selected["Communication Objective"]
+    );
+
+    formData.append(
+      "tone",
+      selected["Tone"]
+    );
+
+    formData.append(
+      "language",
+      selected["Language"]
+    );
+
+    formData.append(
+      "detail_level",
+      selected["Level of Detail"]
+    );
+
+    formData.append(
+      "content_style",
+      selected["Content Style"]
+    );
+
+    formData.append(
+      "output_type",
+      selected["Output Type"]
+    );
+
+    formData.append(
+      "output_format",
+      selected["Output Format"]
+    );
+
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    if (!apiBaseUrl) {
+      throw new Error("The API URL is not configured.");
     }
 
-    setIsTransforming(true);
-    setHasGenerated(false);
+    const response = await fetch(
+      `${apiBaseUrl.replace(/\/$/, "")}/transform`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
-    setTimeout(() => {
-      setIsTransforming(false);
-      setHasGenerated(true);
-    }, 1200);
-  };
+    if (!response.ok) {
+      throw new Error("Transformation failed.");
+    }
+
+    const blob = await response.blob();
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `transformed_content.${selected[
+      "Output Format"
+    ].toLowerCase()}`;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+
+    setHasGenerated(true);
+  } catch (error) {
+    console.error("Transformation error:", error);
+    alert("Transformation failed. Please try again.");
+  } finally {
+    setIsTransforming(false);
+  }
+};
 
   /*
    * SAME THEME SYSTEM AS HOMEPAGE
    */
   const theme = darkMode
     ? {
-        page: "bg-[#0b0d14] text-slate-100",
-        nav: "border-slate-800/80 bg-[#10131d]/85",
-        card: "border-slate-800 bg-[#121621]",
-        soft: "bg-[#171b27]",
-        input:
-          "border-slate-700 bg-[#171b27] text-slate-200",
-        muted: "text-slate-400",
-        border: "border-slate-800",
-        heading: "text-white",
-        preview: "bg-[#111520]",
-        footer: "bg-[#0d1018]",
-      }
+      page: "bg-[#0b0d14] text-slate-100",
+      nav: "border-slate-800/80 bg-[#10131d]/85",
+      card: "border-slate-800 bg-[#121621]",
+      soft: "bg-[#171b27]",
+      input:
+        "border-slate-700 bg-[#171b27] text-slate-200",
+      muted: "text-slate-400",
+      border: "border-slate-800",
+      heading: "text-white",
+      preview: "bg-[#111520]",
+      footer: "bg-[#0d1018]",
+    }
     : {
-        page: "bg-[#f7f8fc] text-[#15182b]",
-        nav: "border-slate-200/70 bg-white/75",
-        card: "border-slate-200 bg-white",
-        soft: "bg-slate-50",
-        input:
-          "border-slate-200 bg-slate-50 text-slate-700",
-        muted: "text-slate-500",
-        border: "border-slate-200",
-        heading: "text-[#15182b]",
-        preview: "bg-white",
-        footer: "bg-white",
-      };
+      page: "bg-[#f7f8fc] text-[#15182b]",
+      nav: "border-slate-200/70 bg-white/75",
+      card: "border-slate-200 bg-white",
+      soft: "bg-slate-50",
+      input:
+        "border-slate-200 bg-slate-50 text-slate-700",
+      muted: "text-slate-500",
+      border: "border-slate-200",
+      heading: "text-[#15182b]",
+      preview: "bg-white",
+      footer: "bg-white",
+    };
 
   return (
     <main
@@ -367,33 +472,29 @@ const toggleTheme = () => {
 
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div
-          className={`absolute left-[-10%] top-[-10%] h-[500px] w-[500px] rounded-full blur-[130px] ${
-            darkMode
-              ? "bg-violet-700/20"
-              : "bg-violet-300/30"
-          }`}
+          className={`absolute left-[-10%] top-[-10%] h-[500px] w-[500px] rounded-full blur-[130px] ${darkMode
+            ? "bg-violet-700/20"
+            : "bg-violet-300/30"
+            }`}
         />
 
         <div
-          className={`absolute right-[-10%] top-[15%] h-[500px] w-[500px] rounded-full blur-[130px] ${
-            darkMode
-              ? "bg-cyan-700/15"
-              : "bg-cyan-200/30"
-          }`}
+          className={`absolute right-[-10%] top-[15%] h-[500px] w-[500px] rounded-full blur-[130px] ${darkMode
+            ? "bg-cyan-700/15"
+            : "bg-cyan-200/30"
+            }`}
         />
 
         <div
-          className={`absolute bottom-[-10%] left-[30%] h-[500px] w-[500px] rounded-full blur-[130px] ${
-            darkMode
-              ? "bg-purple-700/15"
-              : "bg-purple-200/20"
-          }`}
+          className={`absolute bottom-[-10%] left-[30%] h-[500px] w-[500px] rounded-full blur-[130px] ${darkMode
+            ? "bg-purple-700/15"
+            : "bg-purple-200/20"
+            }`}
         />
 
         <div
-          className={`absolute inset-0 ${
-            darkMode ? "opacity-20" : "opacity-40"
-          }`}
+          className={`absolute inset-0 ${darkMode ? "opacity-20" : "opacity-40"
+            }`}
           style={{
             backgroundImage: darkMode
               ? "linear-gradient(rgba(139,92,246,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.06) 1px, transparent 1px)"
@@ -407,99 +508,97 @@ const toggleTheme = () => {
     NAVBAR
 ====================================================== */}
 
-<nav
-  className={`fixed left-0 top-0 z-50 w-full border-b backdrop-blur-xl transition-colors duration-300 ${theme.nav}`}
->
-  <div className="mx-auto flex h-[76px] max-w-[1180px] items-center justify-between px-5">
-    {/* Logo */}
-
-    <Link
-      href="/"
-      className="flex items-center gap-3 text-xl font-extrabold tracking-tight"
-    >
-      <div className="grid h-9 w-9 place-items-center rounded-[11px] bg-gradient-to-br from-violet-600 via-indigo-500 to-cyan-400 text-white shadow-lg shadow-violet-300/40">
-        ✦
-      </div>
-
-      TransForma{" "}
-      <span className="text-violet-600">
-        AI
-      </span>
-    </Link>
-
-    {/* Desktop Navigation */}
-
-    <div
-      className={`hidden items-center gap-8 text-sm md:flex ${theme.muted}`}
-    >
-      <Link
-        href="/"
-        className="transition hover:text-violet-600"
+      <nav
+        className={`fixed left-0 top-0 z-50 w-full border-b backdrop-blur-xl transition-colors duration-300 ${theme.nav}`}
       >
-        Home
-      </Link>
+        <div className="mx-auto flex h-[76px] max-w-[1180px] items-center justify-between px-5">
+          {/* Logo */}
 
-      <Link
-        href="/transform"
-        className="font-semibold text-violet-600"
-      >
-        Transform
-      </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-3 text-xl font-extrabold tracking-tight"
+          >
+            <div className="grid h-9 w-9 place-items-center rounded-[11px] bg-gradient-to-br from-violet-600 via-indigo-500 to-cyan-400 text-white shadow-lg shadow-violet-300/40">
+              ✦
+            </div>
 
-      <Link
-        href="/#possibilities"
-        className="transition hover:text-violet-600"
-      >
-        Possibilities
-      </Link>
+            TransForma{" "}
+            <span className="text-violet-600">
+              AI
+            </span>
+          </Link>
 
-      <Link
-        href="/#how"
-        className="transition hover:text-violet-600"
-      >
-        How It Works
-      </Link>
+          {/* Desktop Navigation */}
 
-      <Link
-        href="/#features"
-        className="transition hover:text-violet-600"
-      >
-        Features
-      </Link>
-    </div>
+          <div
+            className={`hidden items-center gap-8 text-sm md:flex ${theme.muted}`}
+          >
+            <Link
+              href="/"
+              className="transition hover:text-violet-600"
+            >
+              Home
+            </Link>
 
-    {/* Right side */}
+            <Link
+              href="/transform"
+              className="font-semibold text-violet-600"
+            >
+              Transform
+            </Link>
 
-    <div className="flex items-center gap-2">
-      {/* Theme Toggle */}
+            <Link
+              href="/#possibilities"
+              className="transition hover:text-violet-600"
+            >
+              Possibilities
+            </Link>
 
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Toggle dark mode"
-        className={`relative flex h-10 w-[72px] items-center rounded-full border p-1 transition ${
-          darkMode
-            ? "border-slate-700 bg-slate-800"
-            : "border-slate-200 bg-slate-100"
-        }`}
-      >
-        <span
-          className={`absolute grid h-8 w-8 place-items-center rounded-full shadow-sm transition-all duration-300 ${
-            darkMode
-              ? "translate-x-7 bg-slate-700"
-              : "translate-x-0 bg-white"
-          }`}
-        >
-          {darkMode ? "🌙" : "☀️"}
-        </span>
+            <Link
+              href="/#how"
+              className="transition hover:text-violet-600"
+            >
+              How It Works
+            </Link>
 
-        <span className="ml-auto mr-1 text-[9px] font-bold text-slate-400">
-          {darkMode ? "DARK" : "LIGHT"}
-        </span>
-      </button>
-    </div>
-  </div>
-</nav>
+            <Link
+              href="/#features"
+              className="transition hover:text-violet-600"
+            >
+              Features
+            </Link>
+          </div>
+
+          {/* Right side */}
+
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              className={`relative flex h-10 w-[72px] items-center rounded-full border p-1 transition ${darkMode
+                ? "border-slate-700 bg-slate-800"
+                : "border-slate-200 bg-slate-100"
+                }`}
+            >
+              <span
+                className={`absolute grid h-8 w-8 place-items-center rounded-full shadow-sm transition-all duration-300 ${darkMode
+                  ? "translate-x-7 bg-slate-700"
+                  : "translate-x-0 bg-white"
+                  }`}
+              >
+                {darkMode ? "🌙" : "☀️"}
+              </span>
+
+              <span className="ml-auto mr-1 text-[9px] font-bold text-slate-400">
+                {darkMode ? "DARK" : "LIGHT"}
+              </span>
+            </button>
+          </div>
+        </div>
+      </nav>
 
 
       {/* =====================================================
@@ -584,17 +683,16 @@ const toggleTheme = () => {
                 onClick={() =>
                   fileInputRef.current?.click()
                 }
-                className={`mt-6 cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition ${
-                  dragActive
-                    ? "border-violet-500 bg-violet-50 dark:bg-violet-950/20"
-                    : `${theme.border} ${theme.soft} hover:border-violet-300`
-                }`}
+                className={`mt-6 cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition ${dragActive
+                  ? "border-violet-500 bg-violet-50 dark:bg-violet-950/20"
+                  : `${theme.border} ${theme.soft} hover:border-violet-300`
+                  }`}
               >
                 <input
                   ref={fileInputRef}
                   type="file"
                   multiple
-                  accept=".pdf,.doc,.docx,.txt,.md,.csv,.rtf"
+                  accept=".pdf,.doc,.docx,.txt,.md,.csv,.rtf,.png,.jpg,.jpeg,.webp"
                   className="hidden"
                   onChange={handleFileInput}
                 />
@@ -666,29 +764,49 @@ const toggleTheme = () => {
 
               {/* Text input */}
 
-              <div className="mt-6">
-                <div className="mb-2 flex items-center justify-between">
-                  <label
-                    className={`text-[10px] font-bold uppercase tracking-wider ${theme.muted}`}
-                  >
-                    Or paste / write content
-                  </label>
+              {uploadedFiles.length === 0 && (
+                <div className="mt-6">
+                  <div className="mb-2 flex items-center justify-between">
+                    <label
+                      className={`text-[10px] font-bold uppercase tracking-wider ${theme.muted}`}
+                    >
+                      Or paste / write content
+                    </label>
 
-                  <span className="text-[10px] text-slate-400">
-                    {sourceText.length.toLocaleString()}{" "}
-                    characters
-                  </span>
+                    <span className="text-[10px] text-slate-400">
+                      {sourceText.length.toLocaleString()}{" "}
+                      characters
+                    </span>
+                  </div>
+
+                  <textarea
+                    value={sourceText}
+                    onChange={(event) => {
+                      setSourceText(event.target.value);
+                      setHasGenerated(false);
+                    }}
+                    placeholder="Paste your article, report, notes, announcement, research, policy document or any other source content here..."
+                    className={`min-h-[180px] w-full resize-y rounded-2xl border p-4 text-sm leading-6 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 ${theme.input}`}
+                  />
                 </div>
+              )}
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium mb-2">
+                  Additional Instructions
+                  <span className="text-muted-foreground ml-1">
+                    (Optional)
+                  </span>
+                </label>
 
                 <textarea
-                  value={sourceText}
-                  onChange={(event) => {
-                    setSourceText(event.target.value);
+                  value={additionalInstructions}
+                  onChange={(e) => {
+                    setAdditionalInstructions(e.target.value);
                     setHasGenerated(false);
                   }}
-                  placeholder="Paste your article, report, notes, announcement, research, policy document or any other source content here..."
-                  className={`min-h-[180px] w-full resize-y rounded-2xl border p-4 text-sm leading-6 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 ${theme.input}`}
-                />
+                  placeholder="e.g. Keep the output within 2 pages, under 800 words, or highlight the major risks and recommendations."
+                  className={`w-full min-h-[120px] resize-none rounded-2xl border p-4 text-sm leading-6 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 ${theme.input}`} />
               </div>
 
               {/* Transformation settings */}
@@ -717,7 +835,7 @@ const toggleTheme = () => {
                       <div
                         key={name}
                         className={
-                          name === "Output Type"
+                          name === "Output Type" || name === "Output Format"
                             ? "sm:col-span-2"
                             : ""
                         }
@@ -883,7 +1001,7 @@ const toggleTheme = () => {
                         `Objective: ${selected["Communication Objective"]}`,
                         `Tone: ${selected.Tone}`,
                         `Detail: ${selected["Level of Detail"]}`,
-                        `Format: ${selected["Output Type"]}`,
+                        `Output: ${selected["Output Type"]} (${selected["Output Format"]})`,
                       ].map((item) => (
                         <div
                           key={item}
@@ -952,6 +1070,10 @@ const toggleTheme = () => {
                         `${selected["Level of Detail"]} detail level applied.`,
                         `${selected["Content Style"]} content style selected.`,
                         `Output structured as ${selected["Output Type"]}.`,
+                        `Output format: ${selected["Output Format"]}.`,
+                        ...(additionalInstructions.trim()
+                          ? [`Additional instructions: ${additionalInstructions.trim()}`]
+                          : []),
                       ].map((text) => (
                         <div
                           key={text}
@@ -980,27 +1102,25 @@ const toggleTheme = () => {
                     className={`mt-1 text-xs font-semibold ${theme.heading}`}
                   >
                     {uploadedFiles.length > 0
-                      ? `${uploadedFiles.length} file${
-                          uploadedFiles.length > 1
-                            ? "s"
-                            : ""
-                        } uploaded`
+                      ? `${uploadedFiles.length} file${uploadedFiles.length > 1
+                        ? "s"
+                        : ""
+                      } uploaded`
                       : sourceText.trim()
-                      ? "Text content added"
-                      : "No source added yet"}
+                        ? "Text content added"
+                        : "No source added yet"}
                   </p>
                 </div>
 
                 <span
-                  className={`rounded-lg px-3 py-2 text-[9px] font-bold ${
-                    uploadedFiles.length > 0 ||
+                  className={`rounded-lg px-3 py-2 text-[9px] font-bold ${uploadedFiles.length > 0 ||
                     sourceText.trim()
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "bg-slate-100 text-slate-400"
-                  }`}
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "bg-slate-100 text-slate-400"
+                    }`}
                 >
                   {uploadedFiles.length > 0 ||
-                  sourceText.trim()
+                    sourceText.trim()
                     ? "READY"
                     : "WAITING"}
                 </span>
@@ -1014,37 +1134,37 @@ const toggleTheme = () => {
     FOOTER
 ====================================================== */}
 
-<footer
-  className={`border-t ${theme.border} ${theme.footer}`}
->
-  <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-4 px-5 py-8 text-[11px] sm:flex-row">
-    <div
-      className={`font-bold ${theme.heading}`}
-    >
-      ✦ TransForma AI
-    </div>
-
-    <div className={theme.muted}>
-      AI-Powered Content Transformation Platform
-    </div>
-
-    <div className={`flex gap-5 ${theme.muted}`}>
-      <Link
-        href="/#features"
-        className="transition hover:text-violet-600"
+      <footer
+        className={`border-t ${theme.border} ${theme.footer}`}
       >
-        Features
-      </Link>
+        <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-4 px-5 py-8 text-[11px] sm:flex-row">
+          <div
+            className={`font-bold ${theme.heading}`}
+          >
+            ✦ TransForma AI
+          </div>
 
-      <Link
-        href="/#how"
-        className="transition hover:text-violet-600"
-      >
-        How It Works
-      </Link>
-    </div>
-  </div>
-</footer>
+          <div className={theme.muted}>
+            AI-Powered Content Transformation Platform
+          </div>
+
+          <div className={`flex gap-5 ${theme.muted}`}>
+            <Link
+              href="/#features"
+              className="transition hover:text-violet-600"
+            >
+              Features
+            </Link>
+
+            <Link
+              href="/#how"
+              className="transition hover:text-violet-600"
+            >
+              How It Works
+            </Link>
+          </div>
+        </div>
+      </footer>
 
     </main>
   );
