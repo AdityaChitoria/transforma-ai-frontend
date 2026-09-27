@@ -3,204 +3,63 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-
 const possibilities = [
   {
-    icon: "🎓",
-    title: "Student",
-    description:
-      "Turn complex material into clear, memorable learning resources.",
-    output: "→ Study Notes + Quiz",
-  },
-  {
-    icon: "💼",
-    title: "Professional",
-    description:
-      "Convert lengthy reports into concise, decision-ready information.",
-    output: "→ Executive Brief",
-  },
-  {
     icon: "🏛️",
-    title: "Department Head",
+    title: "Government Departments",
     description:
-      "Transform complex information into clear briefings and decision-ready communication.",
-    output: "→ Executive Summary",
+      "Transform complex departmental documents into clear briefings, summaries, advisories and decision-ready communication.",
+    output: "→ Department Briefing",
   },
   {
-    icon: "🌏",
+    icon: "📋",
+    title: "Policy & Administration",
+    description:
+      "Convert policies, guidelines and administrative documents into structured, accessible information for officials and stakeholders.",
+    output: "→ Policy Summary",
+  },
+  {
+    icon: "📢",
     title: "Public Communication",
     description:
-      "Adapt information for citizens, local communities and general audiences.",
+      "Adapt official information into clear public notices, advisories and citizen-focused communication.",
     output: "→ Public Advisory",
   },
+  {
+    icon: "🚨",
+    title: "Emergency & Field Operations",
+    description:
+      "Turn operational information into concise instructions, alerts and field-ready communication for rapid coordination.",
+    output: "→ Operational Brief",
+  },
 ];
-
-const fieldOptions = {
-  "Target Audience": [
-    "School Student",
-    "College Student",
-    "Professional",
-    "Department Head",
-    "General Public",
-    "Security Organisation",
-    "Local Organisation",
-    "Government Official",
-    "Researcher",
-    "Media / Journalist",
-    "Creator",
-    "Teacher / Educator",
-    "Policy Maker",
-    "NGO / Civil Society",
-  ],
-
-  "Communication Objective": [
-    "Educate",
-    "Briefing",
-    "Awareness",
-    "Reporting",
-    "Public Communication",
-    "Persuasion",
-    "Instruction",
-    "Information Sharing",
-    "Policy Communication",
-    "Decision Support",
-    "Announcement",
-    "Emergency Communication",
-  ],
-
-  Tone: [
-    "Formal",
-    "Professional",
-    "Simple",
-    "Technical",
-    "Friendly",
-    "Authoritative",
-    "Neutral",
-    "Persuasive",
-    "Urgent",
-    "Informative",
-    "Conversational",
-  ],
-
-  Language: [
-    "English",
-    "Hindi",
-    "Bengali",
-    "Telugu",
-    "Marathi",
-    "Tamil",
-    "Gujarati",
-    "Kannada",
-    "Malayalam",
-    "Punjabi",
-    "Odia",
-    "Assamese",
-    "Urdu",
-    "Kashmiri",
-    "Konkani",
-    "Maithili",
-    "Nepali",
-    "Sanskrit",
-    "Sindhi",
-    "French",
-    "German",
-    "Spanish",
-    "Arabic",
-    "Chinese",
-    "Japanese",
-  ],
-
-  "Level of Detail": [
-    "Concise",
-    "Moderate",
-    "Detailed",
-    "Comprehensive",
-  ],
-
-  "Content Style": [
-    "Informative",
-    "Educational",
-    "Executive",
-    "Public Information",
-    "Technical",
-    "Policy",
-    "News / Media",
-    "Conversational",
-    "Instructional",
-    "Analytical",
-  ],
-
-  "Output Type": [
-    "Executive Summary",
-    "Press Release",
-    "Advisory",
-    "Social Media Post",
-    "Presentation",
-    "Study Notes",
-    "Briefing Note",
-    "Report",
-    "Email",
-    "Speech",
-    "Public Notice",
-    "FAQ",
-    "Infographic Content",
-    "Policy Summary",
-    "Meeting Minutes",
-    "Newsletter",
-    "Article",
-  ],
-};
-
-const initialParameters = {
-  "Target Audience": "General Public",
-  "Communication Objective": "Public Communication",
-  Tone: "Professional",
-  Language: "English",
-  "Level of Detail": "Concise",
-  "Content Style": "Informative",
-  "Output Type": "Executive Summary",
-};
-
-type ParameterName = keyof typeof fieldOptions;
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
 
-useEffect(() => {
-  const savedTheme = localStorage.getItem("transforma-theme");
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("transforma-theme");
 
-  const isDark = savedTheme === "dark";
+    const isDark = savedTheme === "dark";
 
-  setDarkMode(isDark);
+    setDarkMode(isDark);
 
-  document.documentElement.classList.toggle("dark", isDark);
-}, []);
+    document.documentElement.classList.toggle("dark", isDark);
+  }, []);
 
-const toggleTheme = () => {
-  setDarkMode((current) => {
-    const next = !current;
+  const toggleTheme = () => {
+    setDarkMode((current) => {
+      const next = !current;
 
-    localStorage.setItem(
-      "transforma-theme",
-      next ? "dark" : "light"
-    );
+      localStorage.setItem(
+        "transforma-theme",
+        next ? "dark" : "light"
+      );
 
-    document.documentElement.classList.toggle("dark", next);
+      document.documentElement.classList.toggle("dark", next);
 
-    return next;
-  });
-};
-
-
-
-  const [selected, setSelected] =
-    useState<Record<ParameterName, string>>(initialParameters);
-
-  const updateParameter = (name: ParameterName, value: string) => {
-    setSelected((current) => ({
-      ...current,
-      [name]: value,
-    }));
+      return next;
+    });
   };
 
   const theme = darkMode
@@ -285,12 +144,12 @@ const toggleTheme = () => {
           <div
             className={`hidden items-center gap-8 text-sm md:flex ${theme.muted}`}
           >
-            <a
+            <Link
               href="/transform"
               className="transition hover:text-violet-600"
             >
               Transform
-            </a>
+            </Link>
 
             <a
               href="#possibilities"
@@ -299,7 +158,10 @@ const toggleTheme = () => {
               Possibilities
             </a>
 
-            <a href="#how" className="transition hover:text-violet-600">
+            <a
+              href="#how"
+              className="transition hover:text-violet-600"
+            >
               How It Works
             </a>
 
@@ -315,7 +177,7 @@ const toggleTheme = () => {
             {/* Theme Toggle */}
             <button
               type="button"
-              onClick={toggleTheme} 
+              onClick={toggleTheme}
               aria-label="Toggle dark mode"
               className={`relative flex h-10 w-[72px] items-center rounded-full border p-1 transition ${
                 darkMode
@@ -338,14 +200,7 @@ const toggleTheme = () => {
               </span>
             </button>
 
-            <div className="hidden items-center gap-3 sm:flex">
-              <button
-                className={`px-4 py-2 text-sm font-medium transition hover:text-violet-600 ${theme.muted}`}
-              >
-                Log in
-              </button> 
-            </div>
-
+            {/* Mobile Menu */}
             <button
               className={`text-2xl sm:hidden ${theme.muted}`}
               aria-label="Open menu"
@@ -383,12 +238,13 @@ const toggleTheme = () => {
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <a
-                href="#transform"
+              {/* Start Transforming → Investigate */}
+              <Link
+                href="/transform"
                 className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-violet-200 transition hover:-translate-y-1"
               >
                 ✦ Start Transforming
-              </a>
+              </Link>
 
               <a
                 href="#how"
@@ -397,30 +253,7 @@ const toggleTheme = () => {
                 See How It Works →
               </a>
             </div>
-
-            <div
-              className={`mt-9 flex items-center justify-center gap-4 text-xs lg:justify-start ${theme.muted}`}
-            >
-              <div className="flex">
-                {["A", "R", "S", "K"].map((letter, index) => (
-                  <div
-                    key={letter}
-                    className={`-ml-2 grid h-8 w-8 place-items-center rounded-full border-2 border-white text-[10px] font-bold text-white first:ml-0 ${
-                      [
-                        "bg-violet-500",
-                        "bg-cyan-500",
-                        "bg-pink-500",
-                        "bg-orange-400",
-                      ][index]
-                    }`}
-                  >
-                    {letter}
-                  </div>
-                ))}
-              </div>
-
-              <span>Built for students, professionals, organisations & public communication</span>
-            </div>
+ 
           </div>
 
           {/* Hero Preview */}
@@ -439,7 +272,9 @@ const toggleTheme = () => {
                   <span className="h-2 w-2 rounded-full bg-green-300" />
                 </div>
 
-                <span className={`text-[10px] uppercase tracking-widest ${theme.muted}`}>
+                <span
+                  className={`text-[10px] uppercase tracking-widest ${theme.muted}`}
+                >
                   Transformation Workspace
                 </span>
               </div>
@@ -468,193 +303,46 @@ const toggleTheme = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {(Object.keys(selected) as ParameterName[])
-                  .slice(0, 6)
-                  .map((name) => (
-                    <div
-                      key={name}
-                      className={`rounded-xl border p-3 ${theme.border} ${theme.soft}`}
-                    >
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                        {name}
-                      </p>
+                {[
+                  ["Target Audience", "General Public"],
+                  ["Objective", "Public Communication"],
+                  ["Tone", "Professional"],
+                  ["Language", "English"],
+                  ["Detail", "Concise"],
+                  ["Style", "Informative"],
+                ].map(([name, value]) => (
+                  <div
+                    key={name}
+                    className={`rounded-xl border p-3 ${theme.border} ${theme.soft}`}
+                  >
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                      {name}
+                    </p>
 
-                      <p className={`mt-1 text-[11px] font-semibold ${theme.heading}`}>
-                        {selected[name]}
-                      </p>
-                    </div>
-                  ))}
+                    <p
+                      className={`mt-1 text-[11px] font-semibold ${theme.heading}`}
+                    >
+                      {value}
+                    </p>
+                  </div>
+                ))}
               </div>
 
               <div className="mt-3 rounded-xl border border-cyan-100 bg-gradient-to-br from-violet-50 to-cyan-50 p-4">
                 <div className="mb-2 flex justify-between text-[11px] font-bold text-slate-700">
                   <span>Generated Output</span>
                   <span className="text-cyan-600">
-                    {selected["Output Type"]}
+                    Executive Summary
                   </span>
                 </div>
 
                 <p className="text-[11px] leading-5 text-slate-500">
                   Content transformed for a{" "}
-                  <strong>{selected["Target Audience"].toLowerCase()}</strong>{" "}
-                  using a{" "}
-                  <strong>{selected.Tone.toLowerCase()}</strong> tone,
-                  optimized for{" "}
-                  <strong>{selected["Communication Objective"].toLowerCase()}</strong>{" "}
-                  in <strong>{selected.Language}</strong>.
+                  <strong>general public audience</strong> using a{" "}
+                  <strong>professional</strong> tone, optimized for{" "}
+                  <strong>public communication</strong> in{" "}
+                  <strong>English</strong>.
                 </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Transform */}
-      <section
-        id="transform"
-        className={`border-y py-28 ${theme.border} ${
-          darkMode ? "bg-[#0e1119]" : "bg-white/50"
-        }`}
-      >
-        <div className="mx-auto max-w-[1180px] px-5">
-          <div className="mb-14 max-w-[800px]">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-violet-600">
-              <span className="h-2 w-2 rounded-full bg-violet-500" />
-              Your Transformation
-            </div>
-
-            <h2 className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${theme.heading}`}>
-              Transform it{" "}
-              <span className="bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                your way.
-              </span>
-            </h2>
-
-            <p className={`mt-5 text-base leading-7 ${theme.muted}`}>
-              Define exactly who you are communicating with, why you are
-              communicating, how the message should sound, which language to
-              use and the format you need.
-            </p>
-          </div>
-
-          <div
-            className={`grid overflow-hidden rounded-[26px] border shadow-xl lg:grid-cols-[0.95fr_1.05fr] ${theme.card} ${theme.border}`}
-          >
-            {/* Builder */}
-            <div className={`border-b p-7 lg:border-b-0 lg:border-r ${theme.border}`}>
-              <h3 className={`text-lg font-bold ${theme.heading}`}>
-                Create your transformation profile
-              </h3>
-
-              <p className={`mt-1 text-sm ${theme.muted}`}>
-                Customize every aspect of your output.
-              </p>
-
-              <div className="mt-7 grid gap-4 sm:grid-cols-2">
-                {(Object.keys(fieldOptions) as ParameterName[]).map((name) => (
-                  <div
-                    key={name}
-                    className={name === "Output Type" ? "sm:col-span-2" : ""}
-                  >
-                    <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      {name}
-                    </label>
-
-                    <select
-                      value={selected[name]}
-                      onChange={(event) =>
-                        updateParameter(name, event.target.value)
-                      }
-                      className={`w-full appearance-none rounded-xl border px-3 py-3 text-xs font-medium outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100 ${theme.input}`}
-                    >
-                      {fieldOptions[name].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                  type="button"
-                  onClick={() => {
-                    sessionStorage.setItem(
-                    "transforma-settings",
-                    JSON.stringify(selected)
-                    );
-
-                    window.location.href = "/transform";
-                  }}
-                  className="mt-6 block w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 py-4 text-center text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5"
-                >
-                 ✦ Continue to Transformation
-              </button>
-
-            </div>
-
-            {/* Preview */}
-            <div className="bg-gradient-to-br from-violet-50/70 to-cyan-50/40 p-7 dark:from-violet-950/20 dark:to-cyan-950/10">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                  Live Transformation Preview
-                </span>
-
-                <span className="flex items-center gap-1.5 text-[9px] font-bold text-emerald-600">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  AI READY
-                </span>
-              </div>
-
-              <div
-                className={`min-h-[365px] rounded-2xl border p-6 shadow-sm ${theme.preview} ${theme.border}`}
-              >
-                <div className={`flex items-center justify-between border-b pb-4 ${theme.border}`}>
-                  <h3 className={`text-base font-bold ${theme.heading}`}>
-                    Your transformed content
-                  </h3>
-
-                  <span className="rounded-md bg-violet-50 px-2 py-1 text-[9px] font-bold text-violet-600">
-                    {selected["Output Type"]}
-                  </span>
-                </div>
-
-                <div className="mt-5">
-                  <h4 className={`text-sm font-bold ${theme.heading}`}>
-                    AI-Powered {selected["Output Type"]}
-                  </h4>
-
-                  <p className={`mt-3 text-xs leading-7 ${theme.muted}`}>
-                    This content is being prepared for{" "}
-                    <strong>{selected["Target Audience"]}</strong> with the
-                    objective of{" "}
-                    <strong>{selected["Communication Objective"].toLowerCase()}</strong>.
-                    The message will use a{" "}
-                    <strong>{selected.Tone.toLowerCase()}</strong> tone,
-                    written in <strong>{selected.Language}</strong>, with a{" "}
-                    <strong>{selected["Level of Detail"].toLowerCase()}</strong>{" "}
-                    level of detail.
-                  </p>
-
-                  <div className="mt-5 grid gap-3">
-                    {[
-                      `Audience adapted for ${selected["Target Audience"]}.`,
-                      `Communication optimized for ${selected["Communication Objective"]}.`,
-                      `${selected.Tone} tone and ${selected.Language} language applied.`,
-                      `${selected["Level of Detail"]} level of detail selected.`,
-                      `Structured as a ${selected["Output Type"]}.`,
-                    ].map((text) => (
-                      <div
-                        key={text}
-                        className={`flex gap-2 text-[11px] ${theme.muted}`}
-                      >
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500" />
-                        {text}
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -670,7 +358,9 @@ const toggleTheme = () => {
               One Source. Many Possibilities.
             </div>
 
-            <h2 className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${theme.heading}`}>
+            <h2
+              className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${theme.heading}`}
+            >
               Same content.{" "}
               <span className="bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
                 Completely different impact.
@@ -712,10 +402,12 @@ const toggleTheme = () => {
 
       {/* Features */}
       <section id="features">
-        <div className={`mx-auto grid max-w-[1180px] grid-cols-1 border-y sm:grid-cols-2 lg:grid-cols-4 ${theme.border}`}>
+        <div
+          className={`mx-auto grid max-w-[1180px] grid-cols-1 border-y sm:grid-cols-2 lg:grid-cols-4 ${theme.border}`}
+        >
           {[
             ["🎯 Audience-Aware", "Content adapts to who will read it."],
-            ["🌐 Multilingual", "Indian and international language support."],
+            ["🌐 Multilingual", "English and Hindi (Currently)."],
             ["✦ AI-Powered", "Intelligent transformation, not simple rewriting."],
             ["⚡ Multi-Format", "Create briefs, reports, advisories, posts and more."],
           ].map(([title, description]) => (
@@ -723,7 +415,9 @@ const toggleTheme = () => {
               key={title}
               className={`border-b px-6 py-8 last:border-0 sm:[&:nth-child(even)]:border-l lg:border-b-0 lg:border-r lg:[&:nth-child(even)]:border-l-0 lg:last:border-r-0 ${theme.border}`}
             >
-              <strong className={`block text-sm font-bold ${theme.heading}`}>
+              <strong
+                className={`block text-sm font-bold ${theme.heading}`}
+              >
                 {title}
               </strong>
 
@@ -744,7 +438,9 @@ const toggleTheme = () => {
               Simple Workflow
             </div>
 
-            <h2 className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${theme.heading}`}>
+            <h2
+              className={`text-4xl font-extrabold tracking-tight sm:text-5xl ${theme.heading}`}
+            >
               From source to{" "}
               <span className="bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
                 impact.
@@ -783,7 +479,9 @@ const toggleTheme = () => {
                   {title}
                 </h3>
 
-                <p className={`mx-auto mt-2 max-w-[280px] text-xs leading-6 ${theme.muted}`}>
+                <p
+                  className={`mx-auto mt-2 max-w-[280px] text-xs leading-6 ${theme.muted}`}
+                >
                   {description}
                 </p>
               </div>
@@ -791,11 +489,13 @@ const toggleTheme = () => {
           </div>
         </div>
       </section>
- 
+
       {/* Footer */}
       <footer className={`border-t ${theme.border} ${theme.footer}`}>
         <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-4 px-5 py-8 text-[11px] sm:flex-row">
-          <div className={`font-bold ${theme.heading}`}>✦ TransForma AI</div>
+          <div className={`font-bold ${theme.heading}`}>
+            ✦ TransForma AI
+          </div>
 
           <div className={theme.muted}>
             AI-Powered Content Transformation Platform
@@ -805,9 +505,11 @@ const toggleTheme = () => {
             <a href="#" className="hover:text-violet-600">
               Privacy
             </a>
+
             <a href="#" className="hover:text-violet-600">
               Terms
             </a>
+
             <a href="#" className="hover:text-violet-600">
               Contact
             </a>
