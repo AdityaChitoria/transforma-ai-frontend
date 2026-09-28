@@ -948,6 +948,14 @@ export default function TransformPage() {
             </Link>
 
             <Link
+              href="/verify"
+              className="transition hover:text-violet-600"
+            >
+              Verify
+            </Link>
+
+
+            <Link
               href="/#possibilities"
               className="transition hover:text-violet-600"
             >
