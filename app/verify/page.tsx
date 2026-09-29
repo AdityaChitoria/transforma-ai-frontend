@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 import {
   ChangeEvent,
@@ -643,9 +643,15 @@ export default function VerifyPage() {
             href="/"
             className="flex items-center gap-3 text-xl font-extrabold tracking-tight"
           >
-            <div className="grid h-9 w-9 place-items-center rounded-[11px] bg-gradient-to-br from-violet-600 via-indigo-500 to-cyan-400 text-white shadow-lg shadow-violet-300/40">
-              ✦
+            <div className="relative h-9 w-9 overflow-hidden rounded-[11px]">
+              <Image
+                src="/logo.jpg"
+                alt="TransForma AI"
+                fill
+                className="object-contain"
+              />
             </div>
+
 
             TransForma{" "}
             <span className="text-violet-600">
@@ -675,6 +681,13 @@ export default function VerifyPage() {
               className="font-semibold text-violet-600"
             >
               Verify
+            </Link>
+
+            <Link
+              href="/blockchain"
+              className="transition hover:text-violet-600"
+            >
+              Chain Integrity
             </Link>
 
             <Link
