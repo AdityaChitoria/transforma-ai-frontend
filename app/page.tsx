@@ -151,6 +151,14 @@ export default function Home() {
               Transform
             </Link>
 
+            <Link
+              href="/verify"
+              className="transition hover:text-violet-600"
+            >
+              Verify
+            </Link>
+
+
             <a
               href="#possibilities"
               className="transition hover:text-violet-600"
@@ -348,6 +356,137 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* =====================================================
+    BLOCKCHAIN VERIFICATION
+====================================================== */}
+
+    <section
+      id="verification"
+      className="relative overflow-hidden py-24"
+    >
+      <div className="mx-auto max-w-[1180px] px-5">
+        <div className="relative overflow-hidden rounded-[30px] border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-cyan-50 p-8 shadow-xl shadow-violet-100/40 sm:p-12">
+      
+        {/* Decorative background */}
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-300/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
+
+          <div className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+        
+            {/* LEFT */}
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-violet-600">
+              <span className="h-2 w-2 rounded-full bg-violet-500" />
+              Blockchain Verification
+            </div>
+
+            <h2 className="max-w-[650px] text-3xl font-extrabold tracking-tight text-[#15182b] sm:text-4xl">
+              Verify your content with
+              <span className="bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
+                {" "}blockchain-backed proof.
+              </span>
+            </h2>
+
+            <p className="mt-5 max-w-[620px] text-sm leading-7 text-slate-600 sm:text-base">
+              Upload your original input file and the generated output file
+              to check whether the source content has been used on the
+              platform before and whether the output matches the record
+              provided by TransForma AI.
+            </p>
+
+            <p className="mt-4 max-w-[620px] text-xs leading-6 text-slate-500">
+              Verification is designed to provide a transparent way to
+              validate content provenance and output integrity using the
+              platform's blockchain records.
+            </p>
+
+            <Link
+              href="/verify"
+              className="mt-7 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-violet-300"
+            >
+              Verify Content
+              <span>→</span>
+            </Link>
+          </div>
+
+          {/* RIGHT - VISUAL */}
+          <div className="relative">
+            <div className="rounded-2xl border border-violet-100 bg-white/90 p-5 shadow-lg">
+            
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                    Verification
+                  </p>
+
+                  <p className="mt-1 text-sm font-bold text-[#15182b]">
+                    Content Integrity Check
+                  </p>
+                </div>
+
+                <span className="rounded-lg bg-emerald-50 px-2.5 py-1.5 text-[9px] font-bold text-emerald-600">
+                  BLOCKCHAIN
+                </span>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-100 text-sm">
+                    📄
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold text-[#15182b]">
+                      Input File
+                    </p>
+                    <p className="mt-0.5 text-[9px] text-slate-400">
+                      Source content
+                    </p>
+                  </div>
+
+                  <span className="text-emerald-500">✓</span>
+                </div>
+
+                <div className="flex justify-center text-violet-400">
+                  ↓
+                </div>
+
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cyan-100 text-sm">
+                    📦
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold text-[#15182b]">
+                      Output File
+                    </p>
+                    <p className="mt-0.5 text-[9px] text-slate-400">
+                      Generated content
+                    </p>
+                  </div>
+
+                  <span className="text-emerald-500">✓</span>
+                </div>
+
+                <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-600">
+                    Verification Record
+                  </p>
+
+                  <p className="mt-1 text-xs font-bold text-emerald-700">
+                    Ready to verify
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+      </section>
+
 
       {/* Possibilities */}
       <section id="possibilities" className="py-28">

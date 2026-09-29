@@ -362,7 +362,6 @@ export default function TransformPage() {
    * JPG
    * JPEG
    * PNG
-   * PPT
    * PPTX
    * =========================================================
    */
@@ -375,7 +374,6 @@ export default function TransformPage() {
     ".jpg",
     ".jpeg",
     ".png",
-    ".ppt",
     ".pptx",
   ] as const;
 
@@ -436,7 +434,7 @@ export default function TransformPage() {
      */
     if (!file) {
       alert(
-        "Unsupported file format.\n\nAllowed formats:\nPDF, DOC, DOCX, TXT, JPG, JPEG, PNG, PPT, PPTX."
+        "Unsupported file format.\n\nAllowed formats:\nPDF, DOC, DOCX, TXT, JPG, JPEG, PNG, PPTX."
       );
 
       return;
@@ -948,6 +946,14 @@ export default function TransformPage() {
             </Link>
 
             <Link
+              href="/verify"
+              className="transition hover:text-violet-600"
+            >
+              Verify
+            </Link>
+
+
+            <Link
               href="/#possibilities"
               className="transition hover:text-violet-600"
             >
@@ -1188,7 +1194,7 @@ export default function TransformPage() {
                 <p className="mt-3 text-[10px] font-medium text-slate-400">
                   PDF · DOC · DOCX ·
                   TXT · JPG · JPEG ·
-                  PNG · PPT · PPTX
+                  PNG · PPTX
                 </p>
               </div>
 
